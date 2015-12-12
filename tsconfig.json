@@ -1,0 +1,20 @@
+{
+    "version": "1.7.3",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": true,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": false,
+        "outDir": "dist"
+    },
+    "exclude": [
+      "node_modules",
+      "dist"
+    ],
+    "compileOnSave": false
+}

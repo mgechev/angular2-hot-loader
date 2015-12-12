@@ -1,0 +1,35 @@
+{
+  "name": "angular2-hot-loader",
+  "version": "0.0.1",
+  "keywords": ["hot loader", "loader", "live load", "websockets", "angular", "angular2"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mgechev/angular2-hot-loader.git"
+  },
+  "homepage": "https://github.com/mgechev/angular2-hot-loader",
+  "description": "Angular 2 Hot Loader",
+  "main": "./dist/server/server.js",
+  "scripts": {
+    "build": "tsd install && tsd link && tsc --project .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Minko Gechev <mgechev@gmail.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "angular2": "2.0.0-alpha.52"
+  },
+  "devDependencies": {
+    "tsd": "^0.6.5",
+    "typescript": "1.7.3"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "^5.0.0-alpha.14",
+    "underscore": "^1.8.3",
+    "ws": "^0.8.1"
+  },
+  "typescript": {
+    "typings": "dist/server/server"
+  }
+}
