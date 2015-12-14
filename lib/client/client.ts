@@ -2,11 +2,13 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
 } from 'angular2/src/platform/browser_common';
+import {
+  BROWSER_APP_PROVIDERS
+} from 'angular2/platform/browser';
 import {ComponentRef, platform, reflector} from 'angular2/core';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
 import {
-  BROWSER_APP_PROVIDERS,
   PlatformRef,
   ComponentMetadata,
   ViewMetadata,
@@ -16,7 +18,7 @@ import {
   provide,
   Injector,
   Injectable
-} from 'angular2/angular2';
+} from 'angular2/core';
 
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';

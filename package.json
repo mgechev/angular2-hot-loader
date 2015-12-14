@@ -1,6 +1,6 @@
 {
   "name": "angular2-hot-loader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": ["hot loader", "loader", "live load", "websockets", "angular", "angular2"],
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
-    "angular2": "2.0.0-alpha.52"
+    "angular2": "2.0.0-alpha.53"
   },
   "devDependencies": {
     "tsd": "^0.6.5",
