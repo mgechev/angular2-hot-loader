@@ -103,6 +103,7 @@ export class ComponentProxy {
         console.log('View patched');
         console.log('Running change detection');
         console.log('-------------------------');
+        // TODO remove the interval here
         clearInterval(this.cdInterval);
         this.cdInterval = setInterval(_ => {
           let view = internalView(<any>ref.hostView);
@@ -182,6 +183,7 @@ function reconnect(url) {
   }, 3000);
 }
 
+// TODO move to the proxy class
 function updateView(type, data) {
   let iter = proxies.values();
   let current = iter.next();
