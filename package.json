@@ -1,6 +1,6 @@
 {
   "name": "angular2-hot-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": ["hot loader", "loader", "live load", "websockets", "angular", "angular2"],
   "repository": {
     "type": "git",
