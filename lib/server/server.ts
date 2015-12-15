@@ -8,6 +8,7 @@ let join = require('path').join;
 let express = require('express');
 let app = express();
 let tsc = require('typescript');
+let debug = require('debug')('angular2-hot-loader:server');
 
 let server = http.createServer(app);
 let WebSocketServer = require('ws').Server;
@@ -17,20 +18,23 @@ let wss = new WebSocketServer({
 
 let config = {
   port: 5578,
-  path: 'ng2-hot-loader.js'
+  path: 'ng2-hot-loader.js',
+  transpile: true
 };
 
 export interface Options {
   port?: number;
   path?: string;
+  transpile?: boolean;
 }
 
 export function listen(localConfig?: Options) {
   localConfig = localConfig || config;
   config.port = localConfig.port || config.port;
   config.path = localConfig.path || config.path;
+  config.transpile = localConfig.transpile || config.transpile;
   server.listen(config.port);
-  console.log('Listening on port', config.port);
+  debug('Angular 2 Hot Loader is listening on port', config.port);
 }
 
 export function onChange(files: string[]) {
@@ -79,10 +83,10 @@ function compile(sourceCode) {
 }
 
 function processFileContent(content: string, filename: string) {
-  if (filename.endsWith('.ts')) {
-    return '(function(){' + compile(content.toString()) + '}())';
-  } else if (filename.endsWith('.js')) {
-    return '(function(){' + content.toString() + '}())';
+  if (filename.endsWith('.js') || !config.transpile) {
+    return `(function(){${content.toString()}}())`;
+  } else if (filename.endsWith('.ts')) {
+    return `(function(){${compile(content.toString())}}())`;
   }
   return content;
 }

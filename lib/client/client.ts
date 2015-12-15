@@ -182,24 +182,36 @@ function reconnect(url) {
   }, 3000);
 }
 
-function processMessage(data: MessageFormat) {
-  if (data.filename.endsWith('.html')) {
-    let iter = proxies.values();
-    let current = iter.next();
-    while (!current.done) {
-      var proxy = current.value;
-      var cmp = proxy.get();
-      var metadata = Reflect.getOwnMetadata('annotations', cmp);
-      metadata.forEach(meta => {
-        if (meta instanceof ComponentMetadata && meta.templateUrl) {
-          var normalizedPath = meta.templateUrl.replace(/^\./, '');
+function updateView(type, data) {
+  let iter = proxies.values();
+  let current = iter.next();
+  while (!current.done) {
+    var proxy = current.value;
+    var cmp = proxy.get();
+    var metadata = Reflect.getOwnMetadata('annotations', cmp);
+    metadata.forEach(meta => {
+      if (meta instanceof ComponentMetadata && meta[type]) {
+        let oldVals = meta[type];
+        if (!(oldVals instanceof Array)) {
+          oldVals = [oldVals];
+        }
+        oldVals.forEach(oldVal => {
+          var normalizedPath = oldVal.replace(/^\./, '');
           if (data.filename.endsWith(normalizedPath)) {
             proxy.refresh();
           }
-        }
-      });
-      current = iter.next();
-    }
+        });
+      }
+    });
+    current = iter.next();
+  }
+}
+
+function processMessage(data: MessageFormat) {
+  if (data.filename.endsWith('.html')) {
+    updateView('templateUrl', data);
+  } else if (data.filename.endsWith('.css')) {
+    updateView('styleUrls', data);
   } else {
     eval(data.content);
     for (let ex in exports) {
