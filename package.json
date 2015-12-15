@@ -1,7 +1,14 @@
 {
   "name": "angular2-hot-loader",
-  "version": "0.0.4",
-  "keywords": ["hot loader", "loader", "live load", "websockets", "angular", "angular2"],
+  "version": "0.0.5",
+  "keywords": [
+    "hot loader",
+    "loader",
+    "live load",
+    "websockets",
+    "angular",
+    "angular2"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mgechev/angular2-hot-loader.git"
@@ -23,6 +30,7 @@
     "typescript": "1.7.3"
   },
   "dependencies": {
+    "debug": "^2.2.0",
     "express": "^4.13.3",
     "reflect-metadata": "^0.1.2",
     "rxjs": "^5.0.0-alpha.14",
