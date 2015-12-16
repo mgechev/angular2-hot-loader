@@ -1,3 +1,7 @@
+import 'angular2/common';
+import 'angular2/router';
+import 'angular2/http';
+
 import {isPresent} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
@@ -5,7 +9,7 @@ import {
 import {
   BROWSER_APP_PROVIDERS
 } from 'angular2/platform/browser';
-import {ComponentRef, platform, reflector} from 'angular2/core';
+
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 
 import {
@@ -17,7 +21,10 @@ import {
   Type,
   provide,
   Injector,
-  Injectable
+  Injectable,
+  ComponentRef,
+  platform,
+  reflector
 } from 'angular2/core';
 
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
