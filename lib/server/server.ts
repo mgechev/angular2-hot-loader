@@ -38,18 +38,10 @@ export function listen(localConfig?: Options) {
 }
 
 export function onChange(files: string[]) {
-  files.forEach(file => {
-    fs.readFile(file, function (e, content) {
-      let toSend: MessageFormat = {
-        type: 'update',
-        filename: file
-      };
-      if (config.transpile || !file.endsWith('ts')) {
-        toSend.content = processFileContent(content.toString(), file);
-      }
-      sockets.forEach(function (socket) {
-        socket.send(JSON.stringify(toSend));
-      });
+  files.forEach((file: string) => {
+    let toSend = getPackage(file);
+    sockets.forEach(function (socket) {
+      socket.send(JSON.stringify(toSend));
     });
   });
 }
@@ -58,6 +50,18 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
+
+function getPackage(file: string) {
+  let toSend: MessageFormat = {
+    type: 'update',
+    filename: file
+  };
+  let content = fs.readFileSync(file, { encoding: 'string' });
+  if (config.transpile || !file.endsWith('.ts')) {
+    toSend.content = processFileContent(content.toString(), file);
+  }
+}
+
 function serveHotLoaderRoot(req, res) {
   let filePath = join(__dirname, '..', 'client', 'client.js');
   let fileContent = fs.readFileSync(filePath).toString();
