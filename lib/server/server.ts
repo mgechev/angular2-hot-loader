@@ -16,23 +16,23 @@ let wss = new WebSocketServer({
   server: server
 });
 
-let config = {
+let config: Options = {
   port: 5578,
   path: 'ng2-hot-loader.js',
-  transpile: false
+  projectRoot: ''
 };
 
 export interface Options {
   port?: number;
   path?: string;
-  transpile?: boolean;
+  projectRoot: string;
 }
 
 export function listen(localConfig?: Options) {
   localConfig = localConfig || config;
   config.port = localConfig.port || config.port;
   config.path = localConfig.path || config.path;
-  config.transpile = localConfig.transpile || config.transpile;
+  config.projectRoot = localConfig.projectRoot;
   server.listen(config.port);
   debug('Angular 2 Hot Loader is listening on port', config.port);
 }
@@ -54,12 +54,12 @@ app.use(function(req, res, next) {
 function getPackage(file: string) {
   let toSend: MessageFormat = {
     type: 'update',
-    filename: file
+    filename: file.replace(config.projectRoot, '')
   };
-  let content = fs.readFileSync(file, { encoding: 'string' });
-  if (config.transpile || !file.endsWith('.ts')) {
-    toSend.content = processFileContent(content.toString(), file);
+  if (!file.endsWith('.ts')) {
+    toSend.content = processFileContent(fs.readFileSync(file).toJSON(), file);
   }
+  return toSend;
 }
 
 function serveHotLoaderRoot(req, res) {
