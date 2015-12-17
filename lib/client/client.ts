@@ -131,8 +131,17 @@ export class ComponentProxy {
   private updatePrototype(component) {
     let currentProto = this.component.prototype;
     let newProto = component.prototype;
+
+    // Copy added properties
     Object.getOwnPropertyNames(newProto).forEach(name => {
       currentProto[name] = newProto[name];
+    });
+
+    // Delete removed properties
+    Object.getOwnPropertyNames(currentProto).forEach(name => {
+      if(!newProto.hasOwnProperty(name)) {
+        delete currentProto[name];
+      }
     });
   }
 
