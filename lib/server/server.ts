@@ -19,7 +19,7 @@ let wss = new WebSocketServer({
 let config = {
   port: 5578,
   path: 'ng2-hot-loader.js',
-  transpile: true
+  transpile: false
 };
 
 export interface Options {
@@ -42,9 +42,11 @@ export function onChange(files: string[]) {
     fs.readFile(file, function (e, content) {
       let toSend: MessageFormat = {
         type: 'update',
-        filename: file,
-        content: processFileContent(content.toString(), file)
+        filename: file
       };
+      if (config.transpile || !file.endsWith('ts')) {
+        toSend.content = processFileContent(content.toString(), file);
+      }
       sockets.forEach(function (socket) {
         socket.send(JSON.stringify(toSend));
       });
@@ -83,7 +85,7 @@ function compile(sourceCode) {
 }
 
 function processFileContent(content: string, filename: string) {
-  if (filename.endsWith('.js') || !config.transpile) {
+  if (filename.endsWith('.js')) {
     return `(function(){${content.toString()}}())`;
   } else if (filename.endsWith('.ts')) {
     return `(function(){${compile(content.toString())}}())`;

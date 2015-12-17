@@ -1,7 +1,3 @@
-import 'angular2/common';
-import 'angular2/router';
-import 'angular2/http';
-
 import {isPresent} from 'angular2/src/facade/lang';
 import {
   BROWSER_PROVIDERS,
@@ -34,6 +30,8 @@ import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {internalView} from 'angular2/src/core/linker/view_ref';
 
 import {MessageFormat} from '../common';
+
+System.import('typescript/lib/typescript');
 
 let proxyFactory = (function () {
   let _injector: Injector = null;
@@ -222,12 +220,22 @@ function processMessage(data: MessageFormat) {
   } else if (data.filename.endsWith('.css')) {
     updateView('styleUrls', data);
   } else {
-    eval(data.content);
-    for (let ex in exports) {
-      if (ex !== 'ng2HotLoaderBootstrap' && proxies.has(ex)) {
-        proxies.get(ex).update(exports[ex]);
+    let oldTranspiler = (<any>System).transpiler;
+    (<any>System).transpiler = 'typescript';
+    (<any>System).delete(data.filename);
+    (<any>System).load(data.filename)
+    .then(module => {
+      for (let ex in module) {
+        if (proxies.has(ex)) {
+          proxies.get(ex).update(module[ex]);
+        }
       }
-    }
+      (<any>System).transpiler = oldTranspiler;
+    })
+    .catch(e => {
+      console.error(e);
+    });
+    eval(data.content);
   }
 }
 

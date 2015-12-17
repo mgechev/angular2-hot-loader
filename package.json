@@ -23,7 +23,9 @@
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
-    "angular2": "2.0.0-beta.0"
+    "angular2": "2.0.0-beta.0",
+    "typescript": "^1.7.3",
+    "es6-module-loader": "^0.17.8"
   },
   "devDependencies": {
     "tsd": "^0.6.5",
