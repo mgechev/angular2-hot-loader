@@ -230,9 +230,10 @@ function processMessage(data: MessageFormat) {
     updateView('styleUrls', data);
   } else {
     let oldTranspiler = (<any>System).transpiler;
+    let filename = data.filename.replace(/\\/g, '/');
     (<any>System).transpiler = 'typescript';
-    (<any>System).delete(data.filename);
-    (<any>System).load(data.filename)
+    (<any>System).delete(filename);
+    (<any>System).load(filename)
     .then(module => {
       for (let ex in module) {
         if (proxies.has(ex)) {
