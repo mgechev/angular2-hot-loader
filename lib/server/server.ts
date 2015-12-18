@@ -54,7 +54,7 @@ app.use(function(req, res, next) {
 function getPackage(file: string) {
   let toSend: MessageFormat = {
     type: 'update',
-    filename: file.replace(config.projectRoot, '')
+    filename: file.replace(config.projectRoot, '').replace(/\\/g, '/')
   };
   if (!file.endsWith('.ts')) {
     toSend.content = processFileContent(fs.readFileSync(file).toJSON(), file);

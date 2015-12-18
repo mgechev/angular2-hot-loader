@@ -224,13 +224,13 @@ function updateView(type, data) {
 }
 
 function processMessage(data: MessageFormat) {
-  if (data.filename.endsWith('.html')) {
+  let filename = data.filename;
+  if (filename.endsWith('.html')) {
     updateView('templateUrl', data);
-  } else if (data.filename.endsWith('.css')) {
+  } else if (filename.endsWith('.css')) {
     updateView('styleUrls', data);
   } else {
     let oldTranspiler = (<any>System).transpiler;
-    let filename = data.filename.replace(/\\/g, '/');
     (<any>System).transpiler = 'typescript';
     (<any>System).delete(filename);
     (<any>System).load(filename)
