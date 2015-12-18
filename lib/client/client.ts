@@ -75,10 +75,8 @@ export class ComponentProxy {
     this.updateMetadata(component);
     let annotations = Reflect.getMetadata('annotations', component);
     let isComponent = false;
-    let template;
     annotations.forEach(a => {
       if (a instanceof ComponentMetadata) {
-        template = a.template;
         isComponent = true;
         return;
       }
