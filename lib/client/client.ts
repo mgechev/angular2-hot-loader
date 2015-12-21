@@ -227,8 +227,13 @@ function processMessage(data: MessageFormat) {
   } else {
     let oldTranspiler = (<any>System).transpiler;
     (<any>System).transpiler = 'typescript';
-    (<any>System).delete(filename);
-    (<any>System).load(filename)
+    let baseURL = (<any>System).baseURL.substring(0, (<any>System).baseURL.length - 1);
+    if((<any>System).has(baseURL + filename)) {
+      (<any>System).delete(baseURL + filename);
+    } else {
+      (<any>System).delete(filename);
+    }
+    (<any>System).load(baseURL + filename)
     .then(module => {
       for (let ex in module) {
         if (proxies.has(ex)) {
