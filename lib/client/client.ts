@@ -68,9 +68,6 @@ export class ComponentProxy {
       this.component = component;
       return;
     }
-    if (Reflect.hasMetadata('__proxy__', component)) {
-      return this.update(Reflect.getMetadata('__proxy__', component));
-    }
     this.updatePrototype(component);
     this.updateMetadata(component);
     let annotations = Reflect.getMetadata('annotations', component);
