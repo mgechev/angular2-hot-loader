@@ -31,8 +31,6 @@ import {internalView} from 'angular2/src/core/linker/view_ref';
 
 import {MessageFormat} from '../common';
 
-System.import('typescript/lib/typescript');
-
 let proxyFactory = (function () {
   let _injector: Injector = null;
   let _root: Type = null;
@@ -230,22 +228,20 @@ function processMessage(data: MessageFormat) {
   } else if (filename.endsWith('.css')) {
     updateView('styleUrls', data);
   } else {
-    let oldTranspiler = (<any>System).transpiler;
-    (<any>System).transpiler = 'typescript';
-    (<any>System).delete(filename);
-    (<any>System).load(filename)
+    let path = `${location.protocol}//${location.host}/${filename}`;
+    (<any>System).delete(path);
+    (<any>System).define(path, data.content)
     .then(module => {
+      module = module.module.module;
       for (let ex in module) {
         if (proxies.has(ex)) {
           proxies.get(ex).update(module[ex]);
         }
       }
-      (<any>System).transpiler = oldTranspiler;
     })
     .catch(e => {
       console.error(e);
     });
-    eval(data.content);
   }
 }
 
