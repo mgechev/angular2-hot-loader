@@ -66,17 +66,12 @@ export class ComponentProxy {
       this.component = component;
       return;
     }
-    if (Reflect.hasMetadata('__proxy__', component)) {
-      return this.update(Reflect.getMetadata('__proxy__', component));
-    }
     this.updatePrototype(component);
     this.updateMetadata(component);
     let annotations = Reflect.getMetadata('annotations', component);
     let isComponent = false;
-    let template;
     annotations.forEach(a => {
       if (a instanceof ComponentMetadata) {
-        template = a.template;
         isComponent = true;
         return;
       }
@@ -231,6 +226,14 @@ function processMessage(data: MessageFormat) {
     let path = `${location.protocol}//${location.host}/${filename}`;
     (<any>System).delete(path);
     (<any>System).define(path, data.content)
+//    (<any>System).transpiler = 'typescript';
+//    let baseURL = (<any>System).baseURL.substring(0, (<any>System).baseURL.length - 1);
+//    if((<any>System).has(baseURL + filename)) {
+//      (<any>System).delete(baseURL + filename);
+//    } else {
+//      (<any>System).delete(filename);
+//    }
+//    (<any>System).load(baseURL + filename)
     .then(module => {
       module = module.module.module;
       for (let ex in module) {
