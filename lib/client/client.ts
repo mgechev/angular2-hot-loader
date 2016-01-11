@@ -23,6 +23,8 @@ import {
   reflector
 } from 'angular2/core';
 
+import {RouteRegistry} from 'angular2/router';
+
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {AppView} from 'angular2/src/core/linker/view';
@@ -53,6 +55,7 @@ export class ComponentProxy {
   private cdInterval: any;
   private component: Type;
   private root: Type;
+  private parents: string[] = [];
   constructor(
     private compiler: TemplateCompiler,
     private resolver: ViewResolver,
@@ -119,6 +122,18 @@ export class ComponentProxy {
     this.root = root;
   }
 
+  public getParents() {
+    return this.parents;
+  }
+
+  public addParent(parentName: string) {
+    this.parents.push(parentName);
+  }
+
+  public removeParent(parentName: string) {
+    this.parents.splice(this.parents.indexOf(parentName), 1);
+  }
+
   private updatePrototype(component) {
     let currentProto = this.component.prototype;
     let newProto = component.prototype;
@@ -146,28 +161,32 @@ export class ComponentProxy {
 }
 
 
-let proxies = new Map<string, any>();
+let proxies = new Map<string, ComponentProxy>();
 
-function proxyDirective(current: any) {
-  let metadata = Reflect.getMetadata('annotations', current);
-  proxies.set(current.name, proxyFactory.getProxy(current));
+function proxyDirective(cmp: any, parent: any) {
+  proxies.set(cmp.name, proxyFactory.getProxy(cmp));
+  if (parent) {
+    let proxy = proxies.get(cmp.name);
+    proxy.addParent(parent.name);
+  }
+  let metadata = Reflect.getMetadata('annotations', cmp);
   if (!metadata) return;
   metadata.forEach(current => {
     if ((current instanceof ComponentMetadata || current instanceof ViewMetadata) &&
      current.directives instanceof Array) {
-      current.directives.forEach(proxyDirectives);
+      current.directives.forEach(proxyDirectives.bind(null, cmp));
     }
     if (current.constructor && current.constructor.name === 'RouteConfig') {
-      current.configs.map(c => c.component).forEach(proxyDirectives);
+      current.configs.map(c => c.component).forEach(proxyDirectives.bind(null, cmp));
     }
   });
 }
 
-function proxyDirectives(current: Type | any[]) {
+function proxyDirectives(parent, current: Type | any[]) {
   if (current instanceof Array) {
-    current.forEach(proxyDirectives);
+    current.forEach(proxyDirectives.bind(null, parent));
   } else {
-    proxyDirective(<Type>current);
+    proxyDirective(<Type>current, parent);
   }
 }
 
@@ -216,6 +235,47 @@ function updateView(type, data) {
   }
 }
 
+function updateDirectiveDefinition(directiveName, newDefinition) {
+  let proxy = proxies.get(directiveName);
+  let component = proxy.get();
+  proxy.getParents().forEach(parent => {
+    let parentProxy = proxies.get(parent);
+    let cmp = parentProxy.get();
+    let metadata = Reflect.getMetadata('annotations', cmp);
+    if (!metadata) return;
+    metadata.forEach(current => {
+      if ((current instanceof ComponentMetadata || current instanceof ViewMetadata) &&
+      current.directives instanceof Array) {
+        current.directives = current.directives.filter(directive => {
+          return directive.name !== directiveName;
+        });
+        current.directives.push(newDefinition);
+      }
+      // TODO: Need to reconfigure the routeregistry associated to this component
+      if (current.constructor && current.constructor.name === 'RouteConfig') {
+        current.configs.forEach(c => {
+          if (c.component.name === directiveName) {
+            c.component = newDefinition;
+          }
+        });
+      }
+    });
+  });
+}
+
+function patchDirective(directiveName, newDefinition) {
+  let proxy = proxies.get(directiveName);
+  if (!proxy) {
+    return proxyDirective(newDefinition, null);
+  }
+  let component = proxy.get();
+  if (!component || component.toString() !== newDefinition.toString()) {
+    updateDirectiveDefinition(directiveName, newDefinition);
+  } else {
+    proxies.get(directiveName).update(newDefinition);
+  }
+}
+
 function processMessage(data: MessageFormat) {
   let filename = data.filename;
   if (filename.endsWith('.html')) {
@@ -238,7 +298,7 @@ function processMessage(data: MessageFormat) {
       module = module.module.module;
       for (let ex in module) {
         if (proxies.has(ex)) {
-          proxies.get(ex).update(module[ex]);
+          patchDirective(ex, module[ex]);
         }
       }
     })
@@ -277,7 +337,7 @@ export function ng2HotLoaderBootstrap(
   let bootstrapped = currentApp.bootstrap(appComponentType);
 
   proxyFactory.initialize(currentApp.injector, appComponentType);
-  proxyDirectives(appComponentType);
+  proxyDirectives(null, appComponentType);
 
   initialize(url);
 
