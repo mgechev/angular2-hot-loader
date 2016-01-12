@@ -28,8 +28,8 @@ import {RouteRegistry} from 'angular2/router';
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {AppView} from 'angular2/src/core/linker/view';
+import {AppElement} from 'angular2/src/core/linker/element';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
-import {internalView} from 'angular2/src/core/linker/view_ref';
 
 import {MessageFormat} from '../common';
 
@@ -91,12 +91,12 @@ export class ComponentProxy {
     (<any>this.runtimeResolver)._cache = new Map();
     let visited;
     function runChangeDetection(view: AppView) {
-      if (visited.has(view)) {
+      if (visited.has(view) || !view) {
         return;
       }
       visited.set(view, true);
       view.changeDetector.detectChanges();
-      view.views.forEach(runChangeDetection);
+      view.appElements.forEach(e => runChangeDetection(e.componentView))
     }
     this.app.injector
       .get(DynamicComponentLoader).loadAsRoot(this.root, null, this.app.injector)
@@ -107,7 +107,7 @@ export class ComponentProxy {
         // TODO remove the interval here
         clearInterval(this.cdInterval);
         this.cdInterval = setInterval(_ => {
-          let view = internalView(<any>ref.hostView);
+          let view = ref.hostView.internalView;
           visited = new Map();
           runChangeDetection(view);
         }, 100);
