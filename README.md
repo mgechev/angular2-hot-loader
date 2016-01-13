@@ -40,11 +40,26 @@ ng2HotLoader.onChange([fileName]);
 
 Now on each edit the changes should be pushed to the client.
 
+## Roadmap
+
+- [x] Update the component's inline templates
+- [x] Update the component's external templates
+- [x] Update the component's altered methods
+- [x] Update the component's removed methods
+- [x] Allow definition of new components
+- [x] Update the component's metadata
+- [ ] Update the component's constructor on change
+    - [ ] For components declared in the `directives` array
+    - [ ] For components declared in the `@RouteConfig` definition
+- [ ] Preserve the state of the components (i.e. the values of the bindings)
+- [ ] Preserve the instantiated tokens in the element injectors
+
 ## Features
 
 - Add new methods to existing components
+- Clean removed methods from existing components
 - Support changes of external and inline templates
-- Allow adding inputs and outputs (events and properties) to the components
+- Allows adding inputs and outputs (events and properties) to the components
 
 ## Limitations
 
