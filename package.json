@@ -1,6 +1,6 @@
 {
   "name": "angular2-hot-loader",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "keywords": [
     "hot loader",
     "loader",
@@ -23,7 +23,7 @@
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
-    "angular2": "2.0.0-beta.1",
+    "angular2": "2.0.0-beta.2",
     "es6-module-loader": "^0.17.8",
     "systemjs": "^0.19.4"
   },
