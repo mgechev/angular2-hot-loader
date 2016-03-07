@@ -1,6 +1,6 @@
 {
   "name": "angular2-hot-loader",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "keywords": [
     "hot loader",
     "loader",
@@ -23,7 +23,7 @@
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
-    "angular2": "2.0.0-beta.3",
+    "angular2": "2.0.0-beta.8",
     "es6-module-loader": "^0.17.8",
     "systemjs": "^0.19.4"
   },
@@ -34,7 +34,7 @@
   "dependencies": {
     "debug": "^2.2.0",
     "express": "^4.13.3",
-    "reflect-metadata": "^0.1.2",
+    "reflect-metadata": "0.1.2",
     "underscore": "^1.8.3",
     "ws": "^0.8.1"
   },
