@@ -10,6 +10,12 @@
     },
     "systemjs/systemjs.d.ts": {
       "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
+    },
+    "es6-shim/es6-shim.d.ts": {
+      "commit": "ca92a5b250433c38230b5f4138b36453862342bf"
+    },
+    "node/node.d.ts": {
+      "commit": "ca92a5b250433c38230b5f4138b36453862342bf"
     }
   }
 }

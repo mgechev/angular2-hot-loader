@@ -33,6 +33,11 @@ import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 
 import {MessageFormat} from '../common';
 
+class Node {
+  children: Node[] = [];
+  bindings: any;
+}
+
 let proxyFactory = (function () {
   let _injector: Injector = null;
   let _root: Type = null;
@@ -90,14 +95,53 @@ export class ComponentProxy {
     (<any>this.resolver)._cache = new Map();
     (<any>this.runtimeResolver)._cache = new Map();
     let visited;
-    function runChangeDetection(view: AppView) {
+    let visitedViews = new Map();
+    let root = new Node();
+    function preserveInjectors(view, node) {
+      if (visitedViews.has(view)) {
+        return;
+      }
+      visitedViews.set(view, true);
+      let data = [];
+      view.elementInjectors.forEach(inj => {
+        const strategy = inj._strategy.injectorStrategy;
+        const currentData = {};
+        for (let prop in strategy) {
+          if (/^obj\d+/.test(prop)) {
+            currentData[prop] = strategy[prop];
+          }
+        }
+        data.push(currentData);
+      });
+      node.bindings = data;
+      node.children = view.views.map(e => preserveInjectors(e, new Node()));
+      return node;
+    }
+    function restoreInjectors(view, node) {
+      if (visitedViews.has(view)) {
+        return;
+      }
+      visitedViews.set(view, true);
+      view.elementInjectors.forEach((inj, i) => {
+        const strategy = inj._strategy.injectorStrategy;
+        for (let prop in strategy) {
+          if (/^obj\d+/.test(prop)) {
+            strategy[prop] = node.bindings[i][prop];
+          }
+        }
+      });
+      view.views.forEach((v, i) => restoreInjectors(v, node.children[i]));
+    }
+    function runChangeDetection(view: any) {
       if (visited.has(view) || !view) {
         return;
       }
+      console.log(view.allNodes);
       visited.set(view, true);
       view.changeDetector.detectChanges();
-      view.appElements.forEach(e => runChangeDetection(e.componentView))
+      // view.views.forEach(e => runChangeDetection(e.componentView));
     }
+    preserveInjectors((<any>this.app)._rootComponents[0].hostView._view, root);
     this.app.injector
       .get(DynamicComponentLoader).loadAsRoot(this.root, null, this.app.injector)
       .then(ref => {
@@ -106,8 +150,11 @@ export class ComponentProxy {
         console.log('-------------------------');
         // TODO remove the interval here
         clearInterval(this.cdInterval);
+        visitedViews = new Map();
+        // root.injectors[0]._proto.protoInjector._strategy;
+        restoreInjectors(ref.hostView._view, root);
         this.cdInterval = setInterval(_ => {
-          let view = ref.hostView.internalView;
+          let view = ref.hostView._view;
           visited = new Map();
           runChangeDetection(view);
         }, 100);
