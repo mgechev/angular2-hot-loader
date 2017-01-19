@@ -17,7 +17,7 @@ You can start the hot loader server by:
 ```ts
 import * as ng2HotLoader from 'angular2-hot-loader';
 
-ng2hotloader.listen({
+ng2HotLoader.listen({
   port: 4412,
   projectRoot: __dirname
 });
